@@ -6,6 +6,7 @@
     "es2022": true
   },
   "rules": {
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "react/react-in-jsx-scope": "off",
     "@next/next/no-img-element": "off"
   }

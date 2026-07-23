@@ -1,6 +1,8 @@
 'use client';
+ 
+import React from 'react';
 
-import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import { supabase } from '@/lib/auth/supabaseClient';
 import { BarChart, Bar, Cell, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import {
@@ -142,7 +144,7 @@ const Field = ({ label, children }: { label: string; children: React.ReactNode }
 );
 
 const requestJson = async <T,>(path: string, body?: unknown, method = 'GET'): Promise<T> => {
-  const options: RequestInit = { method, headers: { 'Content-Type': 'application/json' } };
+  const options = { method, headers: { 'Content-Type': 'application/json' } };
   if (body) options.body = JSON.stringify(body);
 
   const res = await fetch(path, options);
@@ -161,7 +163,6 @@ export function CrmShell() {
   const [emails, setEmails] = useState<Email[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [sessionEmail, setSessionEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
@@ -180,7 +181,7 @@ export function CrmShell() {
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       if (sessionError) throw sessionError;
       const email = sessionData?.session?.user?.email ?? null;
-      setSessionEmail(email);
+      // setSessionEmail removed
 
       const [contactsRes, dealsRes, tasksRes, emailsRes, usersRes] = await Promise.all([
         requestJson<Contact[]>('/api/contacts'),
@@ -438,7 +439,7 @@ export function CrmShell() {
   );
 }
 
-function Dashboard({ contacts, deals, tasks, emails, onNavigate }: { contacts: Contact[]; deals: Deal[]; tasks: Task[]; emails: Email[]; onNavigate: (section: string) => void; }) {
+function Dashboard({ contacts, deals, tasks, emails, onNavigate }: { contacts: Contact[]; deals: Deal[]; tasks: Task[]; emails: Email[]; onNavigate: (_section: string) => void; }) {
   const openDeals = deals.filter((deal) => deal.stage !== 'Won' && deal.stage !== 'Lost');
   const pipelineValue = openDeals.reduce((sum, deal) => sum + Number(deal.value || 0), 0);
   const wonThisMonth = deals.filter((deal) => {
@@ -573,10 +574,10 @@ function ContactsView({ contacts, deals, query, setQuery, onEdit, onSave, onDele
   contacts: Contact[];
   deals: Deal[];
   query: string;
-  setQuery: (value: string) => void;
-  onEdit: (contact: Contact | null) => void;
-  onSave: (contact: Contact) => void;
-  onDelete: (id: string) => void;
+  setQuery: (_value: string) => void;
+  onEdit: (_contact: Contact | null) => void;
+  onSave: (_contact: Contact) => void;
+  onDelete: (_id: string) => void;
   editingContact: Contact | null;
   onClose: () => void;
 }) {
@@ -656,9 +657,9 @@ const tableActionStyle = {
   marginLeft: 8,
 };
 
-function ContactForm({ contact, onSave, onCancel }: { contact: Contact; onSave: (contact: Contact) => void; onCancel: () => void }) {
+function ContactForm({ contact, onSave, onCancel }: { contact: Contact; onSave: (_contact: Contact) => void; onCancel: () => void }) {
   const [form, setForm] = useState<Contact>({ ...contact });
-  const update = (field: keyof Contact) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const update = (field: keyof Contact) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [field]: event.target.value });
   };
 
@@ -685,9 +686,9 @@ function ContactForm({ contact, onSave, onCancel }: { contact: Contact; onSave: 
 function DealsView({ deals, contacts, onEdit, onSave, onDelete, editingDeal, onClose }: {
   deals: Deal[];
   contacts: Contact[];
-  onEdit: (deal: Deal | null) => void;
-  onSave: (deal: Deal) => void;
-  onDelete: (id: string) => void;
+  onEdit: (_deal: Deal | null) => void;
+  onSave: (_deal: Deal) => void;
+  onDelete: (_id: string) => void;
   editingDeal: Deal | null;
   onClose: () => void;
 }) {
@@ -739,9 +740,9 @@ function DealsView({ deals, contacts, onEdit, onSave, onDelete, editingDeal, onC
   );
 }
 
-function DealForm({ deal, contacts, onSave, onDelete, onCancel }: { deal: Deal; contacts: Contact[]; onSave: (deal: Deal) => void; onDelete?: () => void; onCancel: () => void }) {
+function DealForm({ deal, contacts, onSave, onDelete, onCancel }: { deal: Deal; contacts: Contact[]; onSave: (_deal: Deal) => void; onDelete?: () => void; onCancel: () => void }) {
   const [form, setForm] = useState<Deal>({ ...deal, value: deal.value || 0, stage: deal.stage || 'Lead' });
-  const update = (field: keyof Deal) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const update = (field: keyof Deal) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const value = field === 'value' ? Number(event.target.value) : event.target.value;
     setForm({ ...form, [field]: value });
   };
@@ -784,9 +785,9 @@ function TasksView({ tasks, contacts, deals, onEdit, onSave, onDelete, editingTa
   tasks: Task[];
   contacts: Contact[];
   deals: Deal[];
-  onEdit: (task: Task | null) => void;
-  onSave: (task: Task) => void;
-  onDelete: (id: string) => void;
+  onEdit: (_task: Task | null) => void;
+  onSave: (_task: Task) => void;
+  onDelete: (_id: string) => void;
   editingTask: Task | null;
   onClose: () => void;
 }) {
@@ -839,9 +840,9 @@ function TasksView({ tasks, contacts, deals, onEdit, onSave, onDelete, editingTa
   );
 }
 
-function TaskForm({ task, contacts, deals, onSave, onDelete, onCancel }: { task: Task; contacts: Contact[]; deals: Deal[]; onSave: (task: Task) => void; onDelete?: () => void; onCancel: () => void }) {
+function TaskForm({ task, contacts, deals, onSave, onDelete, onCancel }: { task: Task; contacts: Contact[]; deals: Deal[]; onSave: (_task: Task) => void; onDelete?: () => void; onCancel: () => void }) {
   const [form, setForm] = useState<Task>({ ...task, completed: task.completed ?? false });
-  const update = (field: keyof Task) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const update = (field: keyof Task) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const target = event.target as HTMLInputElement;
     setForm({ ...form, [field]: field === 'completed' ? target.checked : target.value });
   };
@@ -880,7 +881,7 @@ function TaskForm({ task, contacts, deals, onSave, onDelete, onCancel }: { task:
   );
 }
 
-function EmailsView({ emails, contacts, onEdit, onSave, onDelete, editingEmail, onClose }: { emails: Email[]; contacts: Contact[]; onEdit: (email: Email | null) => void; onSave: (email: Email) => void; onDelete: (id: string) => void; editingEmail: Email | null; onClose: () => void; }) {
+function EmailsView({ emails, contacts, onEdit, onSave, onDelete, editingEmail, onClose }: { emails: Email[]; contacts: Contact[]; onEdit: (_email: Email | null) => void; onSave: (_email: Email) => void; onDelete: (_id: string) => void; editingEmail: Email | null; onClose: () => void; }) {
   const sorted = [...emails].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
   return (
@@ -936,9 +937,9 @@ function EmailsView({ emails, contacts, onEdit, onSave, onDelete, editingEmail, 
   );
 }
 
-function EmailForm({ email, contacts, onSave, onDelete, onCancel }: { email: Email; contacts: Contact[]; onSave: (email: Email) => void; onDelete?: () => void; onCancel: () => void; }) {
+function EmailForm({ email, contacts, onSave, onDelete, onCancel }: { email: Email; contacts: Contact[]; onSave: (_email: Email) => void; onDelete?: () => void; onCancel: () => void; }) {
   const [form, setForm] = useState<Email>({ ...email, direction: email.direction || 'Outbound' });
-  const update = (field: keyof Email) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const update = (field: keyof Email) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [field]: event.target.value });
   };
 
@@ -976,7 +977,7 @@ function EmailForm({ email, contacts, onSave, onDelete, onCancel }: { email: Ema
   );
 }
 
-function AdminView({ users, currentUserId, onEdit, onSave, onDelete, editingUser, onClose }: { users: User[]; currentUserId: string; onEdit: (user: User | null) => void; onSave: (user: User) => void; onDelete: (id: string) => void; editingUser: User | null; onClose: () => void; }) {
+function AdminView({ users, currentUserId, onEdit, onSave, onDelete, editingUser, onClose }: { users: User[]; currentUserId: string; onEdit: (_user: User | null) => void; onSave: (_user: User) => void; onDelete: (_id: string) => void; editingUser: User | null; onClose: () => void; }) {
   const adminCount = users.filter((user) => user.role === 'admin').length;
 
   return (
@@ -1039,12 +1040,12 @@ function AdminView({ users, currentUserId, onEdit, onSave, onDelete, editingUser
   );
 }
 
-function UserForm({ user, users, onSave, onCancel, onDelete, adminCount }: { user: User; users: User[]; onSave: (user: User) => void; onCancel: () => void; onDelete?: () => void; adminCount: number; }) {
+function UserForm({ user, users, onSave, onCancel, onDelete, adminCount }: { user: User; users: User[]; onSave: (_user: User) => void; onCancel: () => void; onDelete?: () => void; adminCount: number; }) {
   const [form, setForm] = useState<User>({ ...user, unlockedSections: user.unlockedSections || ['dashboard'] });
   const [error, setError] = useState('');
   const isNew = !user.id;
   const isSoleAdmin = user.role === 'admin' && adminCount <= 1;
-  const update = (field: keyof User) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const update = (field: keyof User) => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const value = event.target.value;
     if (field === 'unlockedSections') return;
     setForm({ ...form, [field]: value } as User);
@@ -1058,7 +1059,7 @@ function UserForm({ user, users, onSave, onCancel, onDelete, adminCount }: { use
     setForm({ ...form, unlockedSections: next });
   };
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+  const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
     if (!form.name.trim() || !form.email.trim()) {
