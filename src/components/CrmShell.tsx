@@ -144,7 +144,7 @@ const Field = ({ label, children }: { label: string; children: React.ReactNode }
 );
 
 const requestJson = async <T,>(path: string, body?: unknown, method = 'GET'): Promise<T> => {
-  const options = { method, headers: { 'Content-Type': 'application/json' } };
+  const options: RequestInit = { method, headers: { 'Content-Type': 'application/json' } };
   if (body) options.body = JSON.stringify(body);
 
   const res = await fetch(path, options);
