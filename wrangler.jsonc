@@ -1,9 +1,25 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "crmguard",
+  "main": ".open-next/worker.js",
   "compatibility_date": "2026-07-23",
   "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
   "observability": {
     "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "visionguard-crm",
+      "database_name": "visionguard-crm",
+      "database_id": "43dad133-8b33-4c77-8a97-85553eafbf74"
+    }
+  ],
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://jkxyggxoteveiboiqzwp.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpreHlnZ3hvdGV2ZWlib2lxendwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3MTYyNjUsImV4cCI6MjEwMDI5MjI2NX0.jMLggNzR1yUO-1aZFiSN4aXfYRw8b_sV-NFaxT8dxuc"
   }
 }
