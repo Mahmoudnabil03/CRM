@@ -1,0 +1,8 @@
+name = "crmguard"
+compatibility_date = "2026-07-23"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "crmguardd"
+database_name = "crmguardd"
+database_id = "e71978ed-51a6-432f-9386-a5a3b8f3b332"

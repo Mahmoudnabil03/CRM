@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/auth/supabaseClient';
+import { cloudflareAuth } from '@/lib/auth/cloudflareAuth';
 
 export function LoginForm() {
   const [email, setEmail] = useState('');
@@ -13,17 +13,17 @@ export function LoginForm() {
     setError(null);
     setLoading(true);
 
-    if (!supabase) {
+    if (!cloudflareAuth) {
       setError('Authentication client is not configured.');
       setLoading(false);
       return;
     }
 
     if (type === 'password') {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await cloudflareAuth.signInWithPassword({ email, password });
       if (error) setError(error.message);
     } else {
-      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+      const { error } = await cloudflareAuth.signInWithOAuth({ provider: 'google' });
       if (error) setError(error.message);
     }
 

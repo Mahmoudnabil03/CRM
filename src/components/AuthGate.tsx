@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { LoginForm } from './LoginForm';
-import { supabase } from '@/lib/auth/supabaseClient';
+import { cloudflareAuth } from '@/lib/auth/cloudflareAuth';
 
 export function AuthGate({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<any | null>(null);
@@ -12,18 +12,18 @@ export function AuthGate({ children }: { children: ReactNode }) {
   useEffect(() => {
     let isMounted = true;
 
-    if (!supabase) {
+    if (!cloudflareAuth) {
       setLoading(false);
       return;
     }
 
-    supabase.auth.getSession().then(({ data }) => {
+    cloudflareAuth.getSession().then(({ data }) => {
       if (!isMounted) return;
       setSession(data.session);
       setLoading(false);
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data: listener } = cloudflareAuth.onAuthStateChange((_event: any, newSession: any) => {
       if (!isMounted) return;
       setSession(newSession);
       setLoading(false);

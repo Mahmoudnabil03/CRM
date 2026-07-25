@@ -3,7 +3,7 @@
 import React from 'react';
 
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
-import { supabase } from '@/lib/auth/supabaseClient';
+import { cloudflareAuth } from '@/lib/auth/cloudflareAuth';
 import { BarChart, Bar, Cell, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import {
   Users,
@@ -176,9 +176,9 @@ export function CrmShell() {
     setLoading(true);
     setError(null);
     try {
-      if (!supabase) throw new Error('Supabase auth client is not configured.');
+      if (!cloudflareAuth) throw new Error('Auth client is not configured.');
 
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      const { data: sessionData, error: sessionError } = await cloudflareAuth.getSession();
       if (sessionError) throw sessionError;
       const email = sessionData?.session?.user?.email ?? null;
       // setSessionEmail removed
@@ -229,8 +229,8 @@ export function CrmShell() {
   }, [allowedSections, activeSection]);
 
   const signOut = async () => {
-    if (!supabase) return;
-    await supabase.auth.signOut();
+    if (!cloudflareAuth) return;
+    await cloudflareAuth.signOut();
     window.location.href = '/';
   };
 
